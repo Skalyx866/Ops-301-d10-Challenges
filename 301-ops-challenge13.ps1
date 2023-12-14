@@ -1,0 +1,1 @@
+﻿New-ADUser -Name "Franz Ferdinand" -Department "TPS Department" -Title "TPS Reporting lead" -Company "Globex USA" -City "Springfield" -State "Oregon" -EmailAddress "ferdi@GlobeXpower.com"
